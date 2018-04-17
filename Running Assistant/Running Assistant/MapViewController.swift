@@ -25,6 +25,7 @@ class MapViewController: UIViewController {
     private var seconds = 0
     private var timer: Timer?
     private var distance = Measurement(value: 0, unit: UnitLength.meters)
+    private var deltaDistance = Measurement(value: 0, unit: UnitLength.meters)
     private var locationList: [CLLocation] = []
     
     private func startRun() {
@@ -51,26 +52,6 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         stopButton.isHidden = true
-        
-        currentSpeedLabel.layer.masksToBounds = true
-        currentSpeedLabel.layer.cornerRadius = 12
-        currentSpeedLabel.layer.borderWidth = 2
-        currentSpeedLabel.layer.borderColor = UIColor.white.cgColor
-        
-        averageSpeedLabel.layer.masksToBounds = true
-        averageSpeedLabel.layer.cornerRadius = 12
-        averageSpeedLabel.layer.borderWidth = 2
-        averageSpeedLabel.layer.borderColor = UIColor.white.cgColor
-        
-        distanceLabel.layer.masksToBounds = true
-        distanceLabel.layer.cornerRadius = 12
-        distanceLabel.layer.borderWidth = 2
-        distanceLabel.layer.borderColor = UIColor.white.cgColor
-        
-        timeLabel.layer.masksToBounds = true
-        timeLabel.layer.cornerRadius = 12
-        timeLabel.layer.borderWidth = 2
-        timeLabel.layer.borderColor = UIColor.white.cgColor
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -85,8 +66,8 @@ class MapViewController: UIViewController {
     }
     
     private func updateDisplay() {
-        let formattedCurrentSpeed = FormatDisplay.currentSpeed(distance: distance,
-                                                               seconds: seconds,
+        let formattedCurrentSpeed = FormatDisplay.currentSpeed(distance: deltaDistance,
+                                                               seconds: 1,
                                                                outputUnit: UnitSpeed.kilometersPerHour)
         let formattedAverageSpeed = FormatDisplay.averageSpeed(distance: distance,
                                                                seconds: seconds,
@@ -173,7 +154,8 @@ extension MapViewController: CLLocationManagerDelegate {
             
             if let lastLocation = locationList.last {
                 let delta = newLocation.distance(from: lastLocation)
-                distance = distance + Measurement(value: delta, unit: UnitLength.meters)
+                deltaDistance = Measurement(value: delta, unit: UnitLength.meters)
+                distance = distance + deltaDistance
                 let coordinates = [lastLocation.coordinate, newLocation.coordinate]
                 mapView.add(MKPolyline(coordinates: coordinates, count: 2))
                 let region = MKCoordinateRegionMakeWithDistance(newLocation.coordinate, 500, 500)

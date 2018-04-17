@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class RunDetailsViewController: UIViewController {
     
@@ -19,31 +20,13 @@ class RunDetailsViewController: UIViewController {
     
     var run: Run!
     
+    var managedObjectContext: NSManagedObjectContext?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
         
         self.navigationItem.title = dateLabel.text
-        
-        averageSpeedLabel.layer.masksToBounds = true
-        averageSpeedLabel.layer.cornerRadius = 12
-        averageSpeedLabel.layer.borderWidth = 2
-        averageSpeedLabel.layer.borderColor = UIColor.white.cgColor
-        
-        distanceLabel.layer.masksToBounds = true
-        distanceLabel.layer.cornerRadius = 12
-        distanceLabel.layer.borderWidth = 2
-        distanceLabel.layer.borderColor = UIColor.white.cgColor
-        
-        timeLabel.layer.masksToBounds = true
-        timeLabel.layer.cornerRadius = 12
-        timeLabel.layer.borderWidth = 2
-        timeLabel.layer.borderColor = UIColor.white.cgColor
-        
-        dateLabel.layer.masksToBounds = true
-        dateLabel.layer.cornerRadius = 12
-        dateLabel.layer.borderWidth = 2
-        dateLabel.layer.borderColor = UIColor.white.cgColor
     }
     
     private func configureView() {
