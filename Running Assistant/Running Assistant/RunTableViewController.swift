@@ -167,7 +167,7 @@ extension RunTableViewController: UITableViewDataSource {
         dateformatter.dateFormat = "yyyy/MM/dd"
         
         cell.dateLabel.text = dateformatter.string(from: run.date!)
-        cell.distanceLabel.text = String(format:"Megtett távolság: %.1f km", run.distance)
+        cell.distanceLabel.text = String(format:"Megtett távolság: %.1f km", run.distance/1000)
         cell.averageSpeedLabel.text = String(format:"Átlagsebesség: %.1f km/h", run.averageSpeed)
     }
     

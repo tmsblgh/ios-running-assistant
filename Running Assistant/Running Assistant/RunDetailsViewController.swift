@@ -21,7 +21,7 @@ class RunDetailsViewController: UIViewController {
     var run: Run!
     
     var managedObjectContext: NSManagedObjectContext?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
@@ -32,9 +32,9 @@ class RunDetailsViewController: UIViewController {
     private func configureView() {
         let distance = Measurement(value: run.distance, unit: UnitLength.meters)
         let seconds = Int(run.duration)
-        let formattedAverageSpeed = FormatDisplay.averageSpeed(distance: distance,
-                                                               seconds: seconds,
-                                                               outputUnit: UnitSpeed.kilometersPerHour)
+        let formattedAverageSpeed = FormatDisplay.speed(distance: distance, goalSpeed: 0.0,
+                                                        seconds: seconds,
+                                                        outputUnit: UnitSpeed.kilometersPerHour)
         let formattedDistance = FormatDisplay.distance(distance)
         let formattedDate = FormatDisplay.date(run.date)
         let formattedTime = FormatDisplay.time(seconds)
@@ -102,9 +102,9 @@ class RunDetailsViewController: UIViewController {
                 present(alert, animated: true)
                 return
         }
-        
+        let polyLine = self.polyLine()
+        mapView.add(polyLine)
         mapView.setRegion(region, animated: true)
-        mapView.add(polyLine())
     }
 }
 
@@ -119,3 +119,4 @@ extension RunDetailsViewController: MKMapViewDelegate {
         return renderer
     }
 }
+

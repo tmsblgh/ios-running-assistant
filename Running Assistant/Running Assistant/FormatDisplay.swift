@@ -16,6 +16,7 @@ struct FormatDisplay {
     
     static func distance(_ distance: Measurement<UnitLength>) -> String {
         let formatter = MeasurementFormatter()
+        formatter.locale = Locale(identifier: "hu_HU")
         return formatter.string(from: distance)
     }
     
@@ -27,20 +28,13 @@ struct FormatDisplay {
         return formatter.string(from: TimeInterval(seconds))!
     }
     
-    static func currentSpeed(distance: Measurement<UnitLength>, seconds: Int, outputUnit: UnitSpeed) -> String {
+    static func speed(distance: Measurement<UnitLength>, goalSpeed: Float, seconds: Int, outputUnit: UnitSpeed) -> String {
         let formatter = MeasurementFormatter()
         formatter.unitOptions = [.providedUnit]
-        let speedMagnitude = seconds != 0 ? distance.value / Double(seconds) : 0
-        let speed = Measurement(value: speedMagnitude, unit: UnitSpeed.kilometersPerHour)
-        return formatter.string(from: speed.converted(to: outputUnit))
-    }
-    
-    static func averageSpeed(distance: Measurement<UnitLength>, seconds: Int, outputUnit: UnitSpeed) -> String {
-        let formatter = MeasurementFormatter()
-        formatter.unitOptions = [.providedUnit]
-        let speedMagnitude = seconds != 0 ? distance.value / Double(seconds) : 0
-        let speed = Measurement(value: speedMagnitude, unit: UnitSpeed.kilometersPerHour)
-        return formatter.string(from: speed.converted(to: outputUnit))
+        formatter.locale = Locale(identifier: "hu_HU")
+        let speedInDouble = seconds != 0 ? distance.value / Double(seconds) : 0
+        let speedInMeasurement = Measurement(value: speedInDouble, unit: UnitSpeed.kilometersPerHour)
+        return formatter.string(from: speedInMeasurement.converted(to: outputUnit))
     }
     
     static func date(_ timestamp: Date?) -> String {

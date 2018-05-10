@@ -20,6 +20,8 @@ class MapViewController: UIViewController {
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
     
+    private var defaultValues = UserDefaults.standard
+    private var goalSpeed: Float?
     private var run: Run?
     private let locationManager = LocationManager.shared
     private var seconds = 0
@@ -49,9 +51,14 @@ class MapViewController: UIViewController {
         locationManager.stopUpdatingLocation()
     }
     
+    private func loadSettings() {
+        goalSpeed = Float(defaultValues.double(forKey: "SPEED_SLIDER"))
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         stopButton.isHidden = true
+        loadSettings()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -66,12 +73,13 @@ class MapViewController: UIViewController {
     }
     
     private func updateDisplay() {
-        let formattedCurrentSpeed = FormatDisplay.currentSpeed(distance: deltaDistance,
-                                                               seconds: 1,
-                                                               outputUnit: UnitSpeed.kilometersPerHour)
-        let formattedAverageSpeed = FormatDisplay.averageSpeed(distance: distance,
-                                                               seconds: seconds,
-                                                               outputUnit: UnitSpeed.kilometersPerHour)
+        let formattedCurrentSpeed = FormatDisplay.speed(distance: deltaDistance,
+                                                        goalSpeed: goalSpeed!,
+                                                        seconds: 3, // TODO Add deltaTime
+            outputUnit: UnitSpeed.kilometersPerHour)
+        let formattedAverageSpeed = FormatDisplay.speed(distance: distance, goalSpeed: goalSpeed!,
+                                                        seconds: seconds,
+                                                        outputUnit: UnitSpeed.kilometersPerHour)
         let formattedDistance = FormatDisplay.distance(distance)
         let formattedTime = FormatDisplay.time(seconds)
         
@@ -102,7 +110,7 @@ class MapViewController: UIViewController {
         
         present(alertController, animated: true)
     }
-
+    
     private func startLocationUpdates() {
         locationManager.delegate = self
         locationManager.activityType = .fitness
@@ -153,8 +161,7 @@ extension MapViewController: CLLocationManagerDelegate {
             guard newLocation.horizontalAccuracy < 20 && abs(howRecent) < 10 else { continue }
             
             if let lastLocation = locationList.last {
-                let delta = newLocation.distance(from: lastLocation)
-                deltaDistance = Measurement(value: delta, unit: UnitLength.meters)
+                deltaDistance = Measurement(value: newLocation.distance(from: lastLocation), unit: UnitLength.meters)
                 distance = distance + deltaDistance
                 let coordinates = [lastLocation.coordinate, newLocation.coordinate]
                 mapView.add(MKPolyline(coordinates: coordinates, count: 2))
@@ -173,8 +180,9 @@ extension MapViewController: MKMapViewDelegate {
             return MKOverlayRenderer(overlay: overlay)
         }
         let renderer = MKPolylineRenderer(polyline: polyline)
-        renderer.strokeColor = .blue
+        renderer.strokeColor = .black
         renderer.lineWidth = 3
         return renderer
     }
 }
+
